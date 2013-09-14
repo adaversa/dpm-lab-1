@@ -7,7 +7,7 @@ public class Lab1 {
 	//private static final SensorPort lightPort = SensorPort.S2;
 	
 	private static final int bandCenter = 20, bandWidth = 3;
-	private static final int motorLow = 50, motorHigh = 600;
+	private static final int motorLow = 215, motorHigh = 600;
 	
 	
 	public static void main(String [] args) {
