@@ -10,8 +10,8 @@ public class BangBangController implements UltrasonicController {
 	private int distance;
 	private int currentLeftSpeed;
 
-	public static final int WALLDIST = 23;
-	public static final int DEADBAND = 3;
+	public static final int WALLDIST = 20;
+	public static final int DEADBAND = 2;
 
 	static UltrasonicSensor mySensor = new UltrasonicSensor(SensorPort.S1);
 
@@ -29,6 +29,25 @@ public class BangBangController implements UltrasonicController {
 		 leftMotor.forward();
 		 rightMotor.forward();
 		currentLeftSpeed = 0;
+	}
+	
+	public void turnRight(int leftSpeed, int rightSpeed){
+		leftMotor.setSpeed(leftSpeed);
+		rightMotor.setSpeed(rightSpeed);
+		leftMotor.forward();
+		rightMotor.backward();
+	}
+	public void moveForward(int straightSpeed){
+		leftMotor.setSpeed(straightSpeed);
+		rightMotor.setSpeed(straightSpeed);
+		leftMotor.forward();
+		rightMotor.forward();
+	}
+	public void turnLeft(int leftSpeed, int rightSpeed){
+		leftMotor.setSpeed(leftSpeed); // -275
+		rightMotor.setSpeed(rightSpeed); // 500
+		leftMotor.forward();
+		rightMotor.forward();
 	}
 
 	@Override
@@ -49,24 +68,33 @@ public class BangBangController implements UltrasonicController {
 
 
 		if (Math.abs(error) <= DEADBAND) {
-			leftMotor.forward();
-			rightMotor.forward();
+			moveForward(motorStraight);
+//			leftMotor.setSpeed(motorStraight);
+//			rightMotor.setSpeed(motorStraight);
+//			leftMotor.forward();
+//			rightMotor.forward();
 		} else if (error < 0) { // Towards the Right
-			leftMotor.setSpeed(200);
-			rightMotor.backward();
+			turnRight(150,150);
+//			leftMotor.setSpeed(150);
+//			rightMotor.setSpeed(150);
+//			leftMotor.forward();
+//			rightMotor.backward();
 		} else if (error >= 60) { // Towards the left
 			// if (error >= 235){
 			// no();
-			leftMotor.setSpeed(-215); // -275
-			rightMotor.setSpeed(400); // 500
+			turnLeft(100,250);
+			// leftMotor.setSpeed(100); // -275
+			// rightMotor.setSpeed(250); // 500
+			// leftMotor.forward();
+			// rightMotor.forward();
 			// }
 			// else{
 			// leftMotor.setSpeed(100);
 			// rightMotor.setSpeed(100);
 			// }
 		} else{
-			leftMotor.setSpeed(motorStraight);
-			rightMotor.setSpeed(motorStraight);
+			//leftMotor.setSpeed(motorStraight);
+			//rightMotor.setSpeed(motorStraight);
 		}
 
 	}

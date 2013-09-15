@@ -10,19 +10,19 @@ public class UltrasonicPoller extends Thread {
 	}
 	int distance = 0;
 	int filter = 0;
-	int filterBound = 33;
+	int filterBound = 17;
 	public void run() {
 		
 		while (true) {
 			// process collected data
 			distance = us.getDistance();
-			if (distance >= 235 && filter < filterBound) {
+			if (distance >= 60 && filter < filterBound) {
 				filter++;
 			}
 			if (filter == filterBound) {
 				cont.processUSData(distance);
 				filter = 0;
-			} else if (distance < 101  && filter < filterBound){
+			} else if (distance < 60){
 				cont.processUSData(distance);
 			}
 			try {
