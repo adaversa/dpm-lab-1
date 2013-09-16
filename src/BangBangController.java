@@ -35,25 +35,27 @@ public class BangBangController implements UltrasonicController {
 		currentLeftSpeed = 0;
 	}
 
-	// Due to the ultrasonic sensor
-	// Sharp right turn.
+
+	// Method for a sharp right turn.
 	public void turnRight(int leftSpeed, int rightSpeed) {
 		leftMotor.setSpeed(leftSpeed);
 		rightMotor.setSpeed(rightSpeed);
 		leftMotor.forward();
 		rightMotor.backward();
 	}
-
+	
+	// Method to move forward
 	public void moveForward(int straightSpeed) {
 		leftMotor.setSpeed(straightSpeed);
 		rightMotor.setSpeed(straightSpeed);
 		leftMotor.forward();
 		rightMotor.forward();
 	}
-
+	
+	// Method turn left. (Takes a wide left turn)
 	public void turnLeft(int leftSpeed, int rightSpeed) {
-		leftMotor.setSpeed(leftSpeed); // -275
-		rightMotor.setSpeed(rightSpeed); // 500
+		leftMotor.setSpeed(leftSpeed); 
+		rightMotor.setSpeed(rightSpeed); 
 		leftMotor.forward();
 		rightMotor.forward();
 	}
@@ -67,24 +69,28 @@ public class BangBangController implements UltrasonicController {
 		int error = 0;
 
 		error = distance - WALLDIST;
-
-		headMotor.rotateTo(-45);
+		
+		// Remove comment from the line belowin order to accurately set the angle of the sensor.
+		// headMotor.rotateTo(-45);
 
 		// If the error is within the tolerance continue to move straight.
-		if (Math.abs(error) <= DEADBAND) {
+		if (Math.abs(error) <= DEADBAND) 
+		{
 			moveForward(motorStraight);
 		}
 		// If the error is negative then we are too close to the wall, adjust
 		// such that we move away from the wall.
-		else if (error < 0) { 
+		else if (error < 0) 
+		{ 
 			// Turn towards the Right
 			turnRight(125, 125);
 		}
 		/* The third and final case. The error is positive and thus we are too
 		   far away from the wall.
 		   Correct this by moving towards the wall.*/
-
-		else { // Turn towards the left
+		else 
+		{ 
+			// Turn towards the left
 			turnLeft(150, 300);
 		}
 
