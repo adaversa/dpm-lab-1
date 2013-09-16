@@ -1,3 +1,7 @@
+/*Written by:
+ * Hadi Sayar, Student ID: 260531679 
+ * Antonio D'Aversa, Student ID: 260234498
+ */
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.*;
 
@@ -26,24 +30,28 @@ public class BangBangController implements UltrasonicController {
 		headMotor.stop();
 		leftMotor.setSpeed(motorStraight);
 		rightMotor.setSpeed(motorStraight);
-		 leftMotor.forward();
-		 rightMotor.forward();
+		leftMotor.forward();
+		rightMotor.forward();
 		currentLeftSpeed = 0;
 	}
-	
-	public void turnRight(int leftSpeed, int rightSpeed){
+
+	// Due to the ultrasonic sensor
+	// Sharp right turn.
+	public void turnRight(int leftSpeed, int rightSpeed) {
 		leftMotor.setSpeed(leftSpeed);
 		rightMotor.setSpeed(rightSpeed);
 		leftMotor.forward();
 		rightMotor.backward();
 	}
-	public void moveForward(int straightSpeed){
+
+	public void moveForward(int straightSpeed) {
 		leftMotor.setSpeed(straightSpeed);
 		rightMotor.setSpeed(straightSpeed);
 		leftMotor.forward();
 		rightMotor.forward();
 	}
-	public void turnLeft(int leftSpeed, int rightSpeed){
+
+	public void turnLeft(int leftSpeed, int rightSpeed) {
 		leftMotor.setSpeed(leftSpeed); // -275
 		rightMotor.setSpeed(rightSpeed); // 500
 		leftMotor.forward();
@@ -55,30 +63,29 @@ public class BangBangController implements UltrasonicController {
 		this.distance = distance;
 		// TODO: process a movement based on the us distance passed in
 		// (BANG-BANG style)
-
+		
 		int error = 0;
 
 		error = distance - WALLDIST;
-		//distance = mySensor.getDistance();
 
-		// LCD.drawString("Distance:", 0, 4);
-		// LCD.drawInt(error, 4, 11, 4);
-
-		// mySensor.ping();
 		headMotor.rotateTo(-45);
 
+		// If the error is within the tolerance continue to move straight.
 		if (Math.abs(error) <= DEADBAND) {
 			moveForward(motorStraight);
-		} else if (error < 0) { // Towards the Right
-			turnRight(125,125);
-		} else if (error >= 60) { // Towards the left
-			// if (error >= 235){
-			// no();
-			turnLeft(125,260);
-			//moveForward(motorStraight);
-		} else{
-			//leftMotor.setSpeed(motorStraight);
-			//rightMotor.setSpeed(motorStraight);
+		}
+		// If the error is negative then we are too close to the wall, adjust
+		// such that we move away from the wall.
+		else if (error < 0) { 
+			// Turn towards the Right
+			turnRight(125, 125);
+		}
+		/* The third and final case. The error is positive and thus we are too
+		   far away from the wall.
+		   Correct this by moving towards the wall.*/
+
+		else { // Turn towards the left
+			turnLeft(150, 300);
 		}
 
 	}

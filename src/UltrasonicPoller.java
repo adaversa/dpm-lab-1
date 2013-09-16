@@ -16,14 +16,19 @@ public class UltrasonicPoller extends Thread {
 		while (true) {
 			// process collected data
 			distance = us.getDistance();
-			if (distance >= 60 && filter < filterBound) {
+			
+			//incorrect value, do not set the distance but increment the filter value
+			if (distance == 255 && filter < filterBound) {
 				filter++;
 			}
-			if (filter == filterBound) {
+			// The value is correct, set the distance to 255.
+			else if (distance == 255) {
+				cont.processUSData(distance);
+			}
+			// The distance value went below 255. Use the distance value and reset the filter
+			else {
 				cont.processUSData(distance);
 				filter = 0;
-			} else if (distance < 60){
-				cont.processUSData(distance);
 			}
 			try {
 				Thread.sleep(10);

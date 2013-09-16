@@ -1,4 +1,3 @@
-import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.*;
 
 public class PController implements UltrasonicController {
@@ -9,6 +8,9 @@ public class PController implements UltrasonicController {
 	private int distance;
 	private int currentLeftSpeed;
 	private int filterControl;
+	
+	private int WALLDIST;
+	private int DEADBAND;
 	
 	public PController(int bandCenter, int bandwith) {
 		//Default Constructor
@@ -30,22 +32,56 @@ public class PController implements UltrasonicController {
 		}
 	}
 	
+	public void turnRight(int leftSpeed, int rightSpeed) {
+		leftMotor.setSpeed(leftSpeed);
+		rightMotor.setSpeed(rightSpeed);
+		leftMotor.forward();
+		rightMotor.backward();
+	}
+
+	public void moveForward(int straightSpeed) {
+		leftMotor.setSpeed(straightSpeed);
+		rightMotor.setSpeed(straightSpeed);
+		leftMotor.forward();
+		rightMotor.forward();
+	}
+
+	public void turnLeft(int leftSpeed, int rightSpeed) {
+		leftMotor.setSpeed(leftSpeed); // -275
+		rightMotor.setSpeed(rightSpeed); // 500
+		leftMotor.forward();
+		rightMotor.forward();
+	}
 	
 	@Override
 	public void processUSData(int distance) {
 		
-		// rudimentary filter
-		if (distance == 255 && filterControl < FILTER_OUT) {
-			// bad value, do not set the distance var, however do increment the filter value
-			filterControl ++;
-		} else if (distance == 255){
-			// true 255, therefore set distance to 255
-			no();
-			this.distance = distance;
-		} else {
-			// distance went below 255, therefore reset everything.
-			filterControl = 0;
-			this.distance = distance;
+		this.distance = distance;
+		// TODO: process a movement based on the us distance passed in
+		// (BANG-BANG style)
+		
+		int error = 0;
+
+		error = distance - WALLDIST;
+
+		headMotor.rotateTo(-45);
+
+		// If the error is within the tolerance continue to move straight.
+		if (Math.abs(error) <= DEADBAND) {
+			moveForward(motorStraight);
+		}
+		// If the error is negative then we are too close to the wall, adjust
+		// such that we move away from the wall.
+		else if (error < 0) { 
+			// Turn towards the Right
+			turnRight(125, 125);
+		}
+		/* The third and final case. The error is positive and thus we are too
+		   far away from the wall.
+		   Correct this by moving towards the wall.*/
+
+		else { // Turn towards the left
+			turnLeft(150, 300);
 		}
 		// TODO: process a movement based on the us distance passed in (P style)
 		
