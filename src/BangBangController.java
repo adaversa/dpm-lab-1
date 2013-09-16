@@ -4,14 +4,14 @@ import lejos.nxt.*;
 public class BangBangController implements UltrasonicController {
 	private final int bandCenter, bandwith;
 	private final int motorLow, motorHigh;
-	private final int motorStraight = 300;
+	private final int motorStraight = 250;
 	private final NXTRegulatedMotor leftMotor = Motor.B, rightMotor = Motor.C,
 			headMotor = Motor.A;
 	private int distance;
 	private int currentLeftSpeed;
 
 	public static final int WALLDIST = 20;
-	public static final int DEADBAND = 2;
+	public static final int DEADBAND = 3;
 
 	static UltrasonicSensor mySensor = new UltrasonicSensor(SensorPort.S1);
 
@@ -65,33 +65,17 @@ public class BangBangController implements UltrasonicController {
 		// LCD.drawInt(error, 4, 11, 4);
 
 		// mySensor.ping();
-
+		headMotor.rotateTo(-45);
 
 		if (Math.abs(error) <= DEADBAND) {
 			moveForward(motorStraight);
-//			leftMotor.setSpeed(motorStraight);
-//			rightMotor.setSpeed(motorStraight);
-//			leftMotor.forward();
-//			rightMotor.forward();
 		} else if (error < 0) { // Towards the Right
-			turnRight(150,150);
-//			leftMotor.setSpeed(150);
-//			rightMotor.setSpeed(150);
-//			leftMotor.forward();
-//			rightMotor.backward();
+			turnRight(125,125);
 		} else if (error >= 60) { // Towards the left
 			// if (error >= 235){
 			// no();
-			turnLeft(100,250);
-			// leftMotor.setSpeed(100); // -275
-			// rightMotor.setSpeed(250); // 500
-			// leftMotor.forward();
-			// rightMotor.forward();
-			// }
-			// else{
-			// leftMotor.setSpeed(100);
-			// rightMotor.setSpeed(100);
-			// }
+			turnLeft(125,260);
+			//moveForward(motorStraight);
 		} else{
 			//leftMotor.setSpeed(motorStraight);
 			//rightMotor.setSpeed(motorStraight);
