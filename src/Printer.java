@@ -32,6 +32,6 @@ public class Printer extends Thread {
 	public static void printMainMenu() {
 		LCD.clear();
 		LCD.drawString("left = bangbang",  0, 0);
-		LCD.drawString("right = forward", 0, 1);
+		LCD.drawString("right = PController", 0, 1);
 	}
 }

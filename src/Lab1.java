@@ -24,8 +24,9 @@ public class Lab1 {
 		
 		// Setup controller objects
 		BangBangController bangbang = new BangBangController(bandCenter, bandWidth, motorLow, motorHigh);
-		//PController p = new PController(bandCenter, bandWidth);
-		moveForward forward = new moveForward();
+		PController p = new PController(bandCenter, bandWidth);
+		
+		// moveForward forward = new moveForward();
 		
 		// Setup ultrasonic sensor
 		UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
@@ -42,8 +43,8 @@ public class Lab1 {
 			printer = new Printer(option, bangbang);
 			break;
 		case Button.ID_RIGHT:
-			usPoller = new UltrasonicPoller(usSensor, forward);
-			printer = new Printer(option, forward);
+			usPoller = new UltrasonicPoller(usSensor, p);
+			printer = new Printer(option, p);
 			break;
 		default:
 			System.out.println("Error - invalid button");

@@ -1,37 +1,31 @@
 import lejos.nxt.*;
 
 public class PController implements UltrasonicController {
-	
+
 	private final int bandCenter, bandwith;
-	private final int motorStraight = 200, FILTER_OUT = 20;
-	private final NXTRegulatedMotor leftMotor = Motor.B, rightMotor = Motor.C, headMotor = Motor.A;	
+	private final int motorStraight = 250, FILTER_OUT = 20;
+	private final NXTRegulatedMotor leftMotor = Motor.B, rightMotor = Motor.C,
+			headMotor = Motor.A;
 	private int distance;
 	private int currentLeftSpeed;
+	private int currentRightSpeed;
 	private int filterControl;
+
+	private int WALLDIST = 20;
+	private int DEADBAND = 3;
 	
-	private int WALLDIST;
-	private int DEADBAND;
-	
+
 	public PController(int bandCenter, int bandwith) {
-		//Default Constructor
+		// Default Constructor
 		this.bandCenter = bandCenter;
 		this.bandwith = bandwith;
 		leftMotor.setSpeed(motorStraight);
 		rightMotor.setSpeed(motorStraight);
-		
+
 		currentLeftSpeed = 0;
 		filterControl = 0;
 	}
-	
-	
-	private void no()
-	{
-		for (int i = 0; i < 5; i++){
-			headMotor.rotate(60);
-			headMotor.rotate(-60);
-		}
-	}
-	
+
 	public void turnRight(int leftSpeed, int rightSpeed) {
 		leftMotor.setSpeed(leftSpeed);
 		rightMotor.setSpeed(rightSpeed);
@@ -53,41 +47,75 @@ public class PController implements UltrasonicController {
 		rightMotor.forward();
 	}
 	
+	
 	@Override
 	public void processUSData(int distance) {
-		
+
 		this.distance = distance;
 		// TODO: process a movement based on the us distance passed in
-		// (BANG-BANG style)
-		
+		// (P-controller style)
+		currentLeftSpeed = leftMotor.getSpeed();
+		currentRightSpeed = rightMotor.getSpeed();
 		int error = 0;
+		
 
-		error = distance - WALLDIST;
+		error = distance - bandCenter;
+		
+		int delta = Math.abs((error * 100)/ 235);
+		
 
-		headMotor.rotateTo(-45);
+		// to adjust the sensor
+		//headMotor.rotateTo(-45);
 
 		// If the error is within the tolerance continue to move straight.
-		if (Math.abs(error) <= DEADBAND) {
+		if (Math.abs(error) <= bandwith) {
 			moveForward(motorStraight);
 		}
 		// If the error is negative then we are too close to the wall, adjust
 		// such that we move away from the wall.
-		else if (error < 0) { 
+		else if (error < 0  ) {
 			// Turn towards the Right
-			turnRight(125, 125);
+			leftMotor.setSpeed(motorStraight + (int) (delta * 1.4));
+			
+			rightMotor.setSpeed(motorStraight - (int) (delta * 1.4));
+
+			leftMotor.forward();
+			rightMotor.backward();
+			LCD.drawString("I am here!", 0, 6);
+
+			// turnRight(125, 125);
 		}
-		/* The third and final case. The error is positive and thus we are too
-		   far away from the wall.
-		   Correct this by moving towards the wall.*/
+		
+		else if (distance < 85 && distance > 30){
+			leftMotor.setSpeed(motorStraight - delta/15);
+			delta = (int) (delta * 12);
+			rightMotor.setSpeed(motorStraight + (int) (delta* 3));
+
+			leftMotor.forward();
+			rightMotor.forward();
+			
+		}
+		
+		/*
+		 * The third and final case. The error is positive and thus we are too
+		 * far away from the wall. Correct this by moving towards the wall.
+		 */
 
 		else { // Turn towards the left
-			turnLeft(150, 300);
-		}
-		// TODO: process a movement based on the us distance passed in (P style)
 		
+			leftMotor.setSpeed(motorStraight - (int) (delta * 0.4));
+			
+			rightMotor.setSpeed(motorStraight + (int) (delta * 2.5));
+			//2.3
+			leftMotor.forward();
+			rightMotor.forward();
+
+			// turnLeft(150, 300);
+		}
 	}
 
-	
+	// Getter methods to get the current speeds of the wheels
+
 	@Override
 	public int readUSDistance() {
 		return this.distance;

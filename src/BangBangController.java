@@ -14,7 +14,7 @@ public class BangBangController implements UltrasonicController {
 	private int distance;
 	private int currentLeftSpeed;
 
-	public static final int WALLDIST = 20;
+	public static final int WALLDIST = 22;
 	public static final int DEADBAND = 3;
 
 	static UltrasonicSensor mySensor = new UltrasonicSensor(SensorPort.S1);
@@ -70,8 +70,8 @@ public class BangBangController implements UltrasonicController {
 
 		error = distance - WALLDIST;
 		
-		// Remove comment from the line belowin order to accurately set the angle of the sensor.
-		// headMotor.rotateTo(-45);
+		// Remove comment from the line below in order to accurately set the angle of the sensor.
+		//headMotor.rotateTo(-45);
 
 		// If the error is within the tolerance continue to move straight.
 		if (Math.abs(error) <= DEADBAND) 
@@ -91,7 +91,7 @@ public class BangBangController implements UltrasonicController {
 		else 
 		{ 
 			// Turn towards the left
-			turnLeft(150, 300);
+			turnLeft(160, 300);
 		}
 
 	}

@@ -22,8 +22,9 @@ public class UltrasonicPoller extends Thread {
 				filter++;
 			}
 			// The value is correct, set the distance to 255.
-			else if (distance == 255) {
+			else if (distance == 255 && filter == filterBound) {
 				cont.processUSData(distance);
+				filter = 0;
 			}
 			// The distance value went below 255. Use the distance value and reset the filter
 			else {
