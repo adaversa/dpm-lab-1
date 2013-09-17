@@ -1,3 +1,9 @@
+/*
+ * Written and modified by:
+ * Hadi Sayar, Student ID: 260531679 
+ * Antonio D'Aversa, Student ID: 260234498
+ */
+
 import lejos.nxt.*;
 
 public class PController implements UltrasonicController {
@@ -13,7 +19,6 @@ public class PController implements UltrasonicController {
 
 	private int WALLDIST = 20;
 	private int DEADBAND = 3;
-	
 
 	public PController(int bandCenter, int bandwith) {
 		// Default Constructor
@@ -25,7 +30,7 @@ public class PController implements UltrasonicController {
 		currentLeftSpeed = 0;
 		filterControl = 0;
 	}
-
+	
 	public void turnRight(int leftSpeed, int rightSpeed) {
 		leftMotor.setSpeed(leftSpeed);
 		rightMotor.setSpeed(rightSpeed);
@@ -46,8 +51,7 @@ public class PController implements UltrasonicController {
 		leftMotor.forward();
 		rightMotor.forward();
 	}
-	
-	
+
 	@Override
 	public void processUSData(int distance) {
 
@@ -56,27 +60,35 @@ public class PController implements UltrasonicController {
 		// (P-controller style)
 		currentLeftSpeed = leftMotor.getSpeed();
 		currentRightSpeed = rightMotor.getSpeed();
+
+		/* Declare and calculate the error. */
 		int error = 0;
-		
-
 		error = distance - bandCenter;
-		
-		int delta = Math.abs((error * 100)/ 235);
-		
 
-		// to adjust the sensor
-		//headMotor.rotateTo(-45);
+		/*
+		 * The delta value will be used to adjust the motor speed based on the
+		 * error.
+		 */
+		int delta = Math.abs((error * 100) / 235);
 
-		// If the error is within the tolerance continue to move straight.
+		/*
+		 * Remove comment from the line below in order to accurately set the
+		 * angle of the sensor. Set the sensor to face directly forward before
+		 * running the statement below.
+		 */
+		// headMotor.rotateTo(-45);
+
+		/* If the error is within the tolerance continue to move straight. */
 		if (Math.abs(error) <= bandwith) {
 			moveForward(motorStraight);
 		}
-		// If the error is negative then we are too close to the wall, adjust
-		// such that we move away from the wall.
-		else if (error < 0  ) {
+		/*
+		 * If the error is negative then we are too close to the wall, adjust
+		 * such that we move away from the wall.
+		 */
+		else if (error < 0) {
 			// Turn towards the Right
 			leftMotor.setSpeed(motorStraight + (int) (delta * 1.4));
-			
 			rightMotor.setSpeed(motorStraight - (int) (delta * 1.4));
 
 			leftMotor.forward();
@@ -85,28 +97,30 @@ public class PController implements UltrasonicController {
 
 			// turnRight(125, 125);
 		}
-		
-		else if (distance < 85 && distance > 30){
-			leftMotor.setSpeed(motorStraight - delta/15);
+		/*
+		 * The third case. The error is positive but the sensor is detecting a
+		 * wall that is too far away. Adjust such that it will detect the wall
+		 * that is closest to its left.
+		 */
+		else if (distance < 85 && distance > 30) {
+			leftMotor.setSpeed(motorStraight - delta / 15);
 			delta = (int) (delta * 12);
-			rightMotor.setSpeed(motorStraight + (int) (delta* 3));
+			rightMotor.setSpeed(motorStraight + (int) (delta * 3));
 
 			leftMotor.forward();
 			rightMotor.forward();
-			
-		}
-		
-		/*
-		 * The third and final case. The error is positive and thus we are too
-		 * far away from the wall. Correct this by moving towards the wall.
-		 */
 
-		else { // Turn towards the left
-		
+		}
+
+		/*
+		 * The Fourth and final case. The error is positive high value (no wall
+		 * in front of it) and thus we must make a slightly wider turn than our third case
+		 * to correct this and move the robot towards the wall.
+		 */
+		else { 
+			// Turn towards the left
 			leftMotor.setSpeed(motorStraight - (int) (delta * 0.4));
-			
 			rightMotor.setSpeed(motorStraight + (int) (delta * 2.5));
-			//2.3
 			leftMotor.forward();
 			rightMotor.forward();
 

@@ -1,3 +1,5 @@
+//Created this class to initially test the robot after building it.
+
 import lejos.nxt.*;
 
 public class moveForward implements UltrasonicController {
